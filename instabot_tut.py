@@ -5,11 +5,14 @@ from firebase_admin import db
 import os
 import pprint
 from decouple import config
+import numpy as np
+import cv2 as cv
+from PIL import Image,ImageDraw,ImageFont
+import textwrap
+
 class fbToInsta():
     def __init__(self,envVariable="connect-v2-cred"):
-        self.vari=envVariable
-
-
+        self.vari=envVariable   
     def postpic(self,pic_path):
         isfile = os.path.isfile(pic_path) 
         if not isfile:
@@ -22,7 +25,6 @@ class fbToInsta():
         import requests
         r = requests.get(url, allow_redirects=True)
         open(name, 'wb').write(r.content)
-
     def connectDb(self,dburl='https://connectv2-ff192-default-rtdb.firebaseio.com/',dbname="users"):
         cred=credentials.Certificate(config(self.vari))
         firebase_admin.initialize_app(cred, {
@@ -30,9 +32,32 @@ class fbToInsta():
         })
 
         self.dbRef=db.reference(f"/{dbname}")
+    def makeAnImagefromString(self,quoteLines,l=1080,b=1080,text_size=50):
         
+        c=0
+        img=Image.new("RGB",(l,b),(0,0,0))
+        for q in quoteLines:
+            temp=textwrap.wrap(q,50)
+            quote=""
+            for i in temp:
+                quote=i+"\n"
+        
+            
+                fonts=ImageFont.truetype("CrimsonText-BoldItalic.ttf",size=text_size)
+                d = ImageDraw.Draw(img)
+                tw,th = d.textsize(quote, font=fonts)
+                x=max((l-tw)//2,20)
+                y=(b-th)//3+(text_size+25)*c
+                d.text((x,y), quote, fill=(255,245,0),font=fonts)
+                c+=1
+        im2 = Image.open(r"Craziness Speaks.png").convert('RGB')
+        im3 = Image.blend(img, im2, 0.15)
+        im3.save('pil_text.png')
+
+
 t=fbToInsta()
-t.connectDb()
+t.makeAnImagefromString(["Life is a game that demands fame."," whis dfgf fdx xfzdZds  hjcghcghc gcgc cfcfhcfgccfgcg gxdfxdxgfx xfxfd."," dfxfdxgfc cfcg cgfcghchgcgf fxgfxgx"])
+# t.connectDb()
 # print(config(vari))
 # i=0
 # for val in jst.values():
