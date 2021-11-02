@@ -48,7 +48,7 @@ class fbToInsta():
             print("file dont exist")
             return
         bot=instabot.Bot()
-        bot.login(username=config("uname"))
+        bot.login(username=config("uname"),defaultUN=False)
         if checkIfTimePassed():
             r=bot.upload_photo(pic_path)
             self.dbRef.child(self.quoteSelected[0]).child("published").set("Published on "+time.asctime())
